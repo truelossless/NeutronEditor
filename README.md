@@ -29,6 +29,7 @@ I'll keep a warm place somewhere in the editor to display your name :)
 
 ### Not supported
 
+- fonts which aren't monospace
 - text selection
 - copying text
 - some basic text shortcuts
@@ -40,6 +41,8 @@ I'll keep a warm place somewhere in the editor to display your name :)
 - fix bugs (maybe)
 - git integration
 - shell integration via the `!` command
+- custom line height
+- custom character spacing
 
 ### Known bugs	
 
