@@ -91,7 +91,7 @@ void ActionBar::autoComplete() {
 		}
 	}
 	else if(m_command.length() > 0) {
-		for (int i = 0; i < m_command.size(); i++) {
+		for (int i = 0; i < m_commands.size(); i++) {
 			
 			if (m_command.length() > m_commands[i].shortcut.size()) continue;
 
