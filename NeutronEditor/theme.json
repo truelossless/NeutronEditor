@@ -1,0 +1,153 @@
+// -----------------------------
+// Neutron editor's theme file
+// -----------------------------
+
+// All colors are expressed in red green blue alpha format,
+// where r,g,b,a can vary from 0 to 255.
+//
+// example:
+// "backgroundColor" {
+//     "r": 255,
+//     "g": 255,
+//     "b": 128,
+//     "a": 64
+// }
+//
+// Note: the alpha parameter can be omitted.
+//
+// You can find the font size properties in the "conf.json" file.
+// Indeed, the font size is more of an accessibility feature rather than a cosmetic feature.
+
+{
+  // editor related properties, such as syntax highlighling
+  "editor": {
+
+    // background color of the editor
+    "backgroundColor": {
+      "r": 255,
+      "g": 255,
+      "b": 255
+    },
+
+    // default text color of the characters, when they aren't highlighted
+    "textColor": {
+      "r": 0,
+      "g": 0,
+      "b": 0
+    },
+
+    // color of numbers
+    "numberColor": {
+      "r": 128,
+      "g": 128,
+      "b": 128
+    },
+
+    // color of the operators, such as while, if, for ...
+    "operatorColor": {
+      "r": 2,
+      "g": 219,
+      "b": 177
+    },
+
+    // color of text inside quotes
+    "quotesColor": {
+      "r": 222,
+      "g": 113,
+      "b": 31
+    },
+
+    // color of the "types", such as int, var, void ...
+    "typeColor": {
+      "r": 0,
+      "g": 137,
+      "b": 184
+    },
+
+    // color of the comments
+    "commentsColor": {
+      "r": 36,
+      "g": 205,
+      "b": 66
+    },
+
+    // color of the cursor
+    "cursorColor": {
+      "r": 120,
+      "g": 120,
+      "b": 120,
+      "a": 100
+    },
+
+    // color of the character right under the cursor
+    "underCursorColor": {
+      "r": 138,
+      "g": 93,
+      "b": 142
+    },
+
+    // color of the current line highlighting
+    "currentLineColor": {
+      "r": 230,
+      "g": 230,
+      "b": 230
+    }
+  },
+
+  "lineIndicator": {
+
+    // background color of the line indicator
+    "backgroundColor": {
+      "r": 240,
+      "g": 240,
+      "b": 240,
+      "a": 220
+    },
+
+    // color of the numbers in the line indicator
+    "textColor": {
+      "r": 0,
+      "g": 170,
+      "b": 170
+    }
+  },
+
+  // action bar related properties
+  "actionBar": {
+
+    // background color of the action bar, when it's active
+    "backgroundColor": {
+      "r": 2,
+      "g": 219,
+      "b": 177
+    },
+
+    // color of the text when the action bar is set to inactive
+    "inactiveTextColor": {
+      "r": 128,
+      "g": 128,
+      "b": 128
+    },
+
+    // color of the text when the action bar is set to active
+    "activeTextColor": {
+      "r": 0,
+      "g": 0,
+      "b": 0
+    },
+
+    // properties related to the action bar border
+    "border": {
+
+      // border thickness, in px
+      "width": 1,
+
+      // border color
+      "color": {
+        "r": 128,
+        "g": 128,
+        "b": 128 
+      }
+    }
+  }
+}
