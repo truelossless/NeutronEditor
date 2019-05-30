@@ -1,5 +1,7 @@
 # Neutron Editor
 
+![Neutron Editor](https://i.imgur.com/u2d4WJG.png)
+
 An editor that aims productivity.
 Inspired by vim, emacs and more modern editors !
 
