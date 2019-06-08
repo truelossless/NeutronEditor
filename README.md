@@ -1,5 +1,7 @@
 # Neutron Editor
 
+![Neutron Editor](https://i.imgur.com/u2d4WJG.png)
+
 An editor that aims productivity.
 Inspired by vim, emacs and more modern editors !
 
@@ -27,6 +29,7 @@ I'll keep a warm place somewhere in the editor to display your name :)
 
 ### Not supported
 
+- fonts which aren't monospace
 - text selection
 - copying text
 - some basic text shortcuts
@@ -38,6 +41,8 @@ I'll keep a warm place somewhere in the editor to display your name :)
 - fix bugs (maybe)
 - git integration
 - shell integration via the `!` command
+- custom line height
+- custom character spacing
 
 ### Known bugs	
 
