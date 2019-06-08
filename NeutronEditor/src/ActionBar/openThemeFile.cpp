@@ -1,7 +1,7 @@
 #include "ActionBar.h"
 
-void ActionBar::action_openThemeFile(ActionBar& actionBar) {
+void ActionBar::action_openThemeFile(ActionBar& actionBar, TextView& textView) {
 	
-	actionBar.m_currentTextView->open("theme.json");
+	textView.open("theme.json");
 	actionBar.setActive(false);
 }

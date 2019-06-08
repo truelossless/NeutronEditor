@@ -8,17 +8,25 @@
 #include <sstream>
 #include <nfd.h>
 
-TextView::TextView(sf::RenderWindow& window) :
-	m_window(window),
-	m_view(window.getDefaultView()),
-	m_absoluteXView(m_view),
-	m_absoluteYView(m_view),
-	m_cursor(),
-	m_lineIndicator(sf::Vector2f(static_cast<float>(Constants::FONT_WIDTH * 3), static_cast<float>(window.getSize().y))) {
+std::vector<TextView> TextView::m_textViews;
+int TextView::m_currentTextViewIndex = 0;
 
-	m_width = window.getSize().x;
-	m_height = window.getSize().y;
+TextView::TextView(sf::RenderWindow& window, float rx, float ry, float rwidth, float rheight) :
+	m_window(window),
+	m_cursor(),
+
+	m_rx(rx),
+	m_ry(ry),
+	m_rwidth(rwidth),
+	m_rheight(rheight),
+
+	m_lineIndicator(sf::Vector2f(Constants::FONT_WIDTH * 3, m_height)) {
+
 	m_lineIndicator.setFillColor(Constants::LINE_INDICATOR_BACKGROUND_COLOR);
+	updateView();
+
+	// add a first line to the textarea
+	addLine("");
 }
 
 TextView::~TextView()
@@ -26,46 +34,43 @@ TextView::~TextView()
 }
 
 void TextView::draw() {
-
-	// where the text should be drawn
-	int baseX = m_x + m_lineIndicator.getLocalBounds().width + Constants::FONT_WIDTH;
+	
+	// draw a thin border to differenciate editors
 
 	// draw the highlighted line
-	m_window.setView(m_absoluteXView);
-	sf::RectangleShape currentLine(sf::Vector2f(m_width, Constants::FONT_SIZE));
-	currentLine.setFillColor(Constants::CURRENT_LINE_COLOR);
-	currentLine.setPosition(0, m_cursor.getLine()*Constants::FONT_SIZE);
-	m_window.draw(currentLine);
+	if (m_active) {
+		m_window.setView(m_absoluteXView);
+		sf::RectangleShape currentLine(sf::Vector2f(m_width, Constants::FONT_SIZE));
+		currentLine.setFillColor(Constants::CURRENT_LINE_COLOR);
+		currentLine.setPosition(0, m_cursor.getLine()*Constants::FONT_SIZE);
+		m_window.draw(currentLine);
+	}
+
+	// start of the text region
+	int baseX = m_lineIndicator.getLocalBounds().width + Constants::FONT_WIDTH;
 
 	// draw all the text
 	m_window.setView(m_view);
 
-	// only draw visible lines
-	int firstLine = m_window.mapPixelToCoords(sf::Vector2i(0, 0), m_view).y;
-	firstLine = static_cast<int>(firstLine / Constants::FONT_SIZE);
-	
-	int lastLine = static_cast<int>(m_height / Constants::FONT_SIZE) + 1;
-	lastLine += firstLine;
-	if (lastLine > m_lines.size()) lastLine = m_lines.size();
-
-	for (int i = firstLine; i < lastLine; i++) {
+	// draw all the characters
+	for (int i = 0; i < m_lines.size(); i++) {
 		for (int j = 0; j < m_lines[i].getText().length(); j++) {
 			sf::Text character = m_lines[i].getCharacter(j).getText();
-			character.setPosition(baseX + Constants::FONT_WIDTH*j, m_y + Constants::FONT_SIZE*i);
+			character.setPosition(baseX + Constants::FONT_WIDTH*j, Constants::FONT_SIZE*i);
 			m_window.draw(character);
 		}
 	}
 
 	// draw the line indicator
-	m_window.setView(Constants::absoluteView); // we can use here the absolute view
-	m_lineIndicator.setSize(sf::Vector2f(m_x + (getLineIndicatorNumberCount() + 2)*Constants::FONT_WIDTH, m_y + m_height));
+	m_window.setView(m_absoluteView); // we can use here the absolute view
+	m_lineIndicator.setSize(sf::Vector2f((getLineIndicatorNumberCount() + 2)*Constants::FONT_WIDTH, m_height));
 	m_window.draw(m_lineIndicator);
 
 	// draw the line numbers
 	m_window.setView(m_absoluteXView);
 	for (int i = 0; i < m_lines.size(); i++) {
 		sf::Text lineNumber(std::to_string(i + 1), Constants::FONT, Constants::FONT_SIZE);
-		lineNumber.setPosition(m_x + Constants::FONT_WIDTH, m_y + Constants::FONT_SIZE*i);
+		lineNumber.setPosition(Constants::FONT_WIDTH, Constants::FONT_SIZE*i);
 		lineNumber.setFillColor(Constants::LINE_INDICATOR_TEXT_COLOR);
 		m_window.draw(lineNumber);
 	}
@@ -81,15 +86,29 @@ void TextView::draw() {
 	m_window.draw(m_cursor.getShape());
 }
 
-void TextView::updateView(int width, int height) {
-	m_view.setSize(static_cast<float>(width), static_cast<float>(height));
-	m_view.setCenter(static_cast<int>(width / 2), static_cast<int>(height / 2));
+void TextView::updateView() {
 
+	int width = m_window.getSize().x;
+	int height = m_window.getSize().y;
+
+	m_x = m_rx * width;
+	m_y = m_ry * height;
+	
+	m_width = width * m_rwidth;
+	m_height = height * m_rheight;
+
+	std::cout << "width: " << m_width;
+	std::cout << "height: " << m_height;
+
+	m_view.setViewport(sf::FloatRect(m_rx, m_ry, m_rwidth, m_rheight));
+	m_view.setSize(m_width, m_height);
+	m_view.setCenter(m_width/2, m_height/2);
+
+	m_absoluteView = m_view;
 	m_absoluteXView = m_view;
 	m_absoluteYView = m_view;
 
-	m_width = width;
-	m_height = height;
+	scroll();
 }
 
 void TextView::moveView(int deltaX, int deltaY) {
@@ -98,37 +117,55 @@ void TextView::moveView(int deltaX, int deltaY) {
 	m_absoluteYView.move(deltaX, 0);
 }
 
+// scrolling: (working better)
 void TextView::scroll() {
-
+	
 	sf::Vector2i coords = m_window.mapCoordsToPixel(m_cursor.getShape().getPosition(), m_view);
-
 	sf::Vector2f newCoords = m_view.getCenter();
 
-	// scroll up
-	if (coords.y < 0 && m_view.getCenter().y > m_height / 2) {
+	// down scroll
+	if (coords.y + Constants::FONT_SIZE > m_y + m_height) {
+		std::cout << "scrolling down" << std::endl;
+		newCoords.y = - m_height / 2 + (m_cursor.getLine()+1) * Constants::FONT_SIZE;
+		std::cout << "new coords /y: " << newCoords.y << std::endl;
+	}
+	
+	// up scroll
+	else if (coords.y < m_y) {
+		std::cout << "scrolling up" << std::endl;
 		newCoords.y = m_height / 2 + m_cursor.getLine() * Constants::FONT_SIZE;
+		std::cout << "new coords /y: " << newCoords.y << std::endl;
+	}
+	
+	int baseX = m_lineIndicator.getLocalBounds().width + Constants::FONT_WIDTH;
+
+	// left scroll
+	if (coords.x < m_x + baseX) {
+		newCoords.x = m_width / 2 + m_cursor.getPos() * Constants::FONT_WIDTH;
+		if (coords.x < m_width / 2 - baseX)	newCoords.x = m_width / 2;
 	}
 
-	// scroll down
-	else if (coords.y + Constants::FONT_SIZE*3 > m_height + 5) {
-		std::cout << m_height << " | " << coords.y + Constants::FONT_SIZE * 3 << std::endl;
-		newCoords.y = - m_height / 2 + m_cursor.getShape().getGlobalBounds().top + Constants::FONT_SIZE*3;
+	// right scroll
+	else if (coords.x + Constants::FONT_WIDTH > m_x + m_width) {
+		std::cout << "scrolling right" << std::endl;
+		newCoords.x = -m_width / 2 + baseX + (m_cursor.getPos()+1) * Constants::FONT_WIDTH;
+		std::cout << "new coords /x: " << newCoords.y << std::endl;
 	}
 
-	// scroll left
-	if (coords.x < m_lineIndicator.getLocalBounds().width) {
-		newCoords.x = m_width / 2 + m_cursor.getShape().getGlobalBounds().left - m_lineIndicator.getLocalBounds().width;
-		if (m_cursor.getPos() == 0) newCoords.x = m_width / 2;
-	}
-	// scroll right
-	else if (coords.x > m_width) {
-		newCoords.x = - m_width / 2 + m_cursor.getShape().getGlobalBounds().left + Constants::FONT_WIDTH;
-	}
+	//// scroll left
+	//if (coords.x < m_x + m_lineIndicator.getLocalBounds().width) {
+	//	std::cout << "scrollnig left !!" << std::endl;
+	//	newCoords.x = m_cursor.getShape().getGlobalBounds().left - m_lineIndicator.getGlobalBounds().width;
+	//	if (m_cursor.getPos() == 0) newCoords.x = m_x;
+	//}
+	//// scroll right
+	//else if (coords.x + Constants::FONT_WIDTH > m_x + m_width) {
+	//	newCoords.x =  - (m_x + m_width) / 2 + m_cursor.getShape().getGlobalBounds().left + Constants::FONT_WIDTH;
+	//}
 
 	m_view.setCenter(newCoords.x, newCoords.y);
-	m_absoluteXView.setCenter(m_width / 2, newCoords.y);
-	m_absoluteYView.setCenter(newCoords.x, m_height / 2);
-	m_window.setView(m_view);
+	m_absoluteXView.setCenter(m_absoluteXView.getCenter().x, newCoords.y);
+	m_absoluteYView.setCenter(newCoords.x, m_absoluteYView.getCenter().y);
 }
 
 void TextView::clear() {
@@ -148,20 +185,20 @@ void TextView::save() {
 		nfdresult_t result = NFD_SaveDialog(NULL, NULL, &outPath);
 
 		if (result == NFD_OKAY) {
-	
+
 			std::ofstream file(outPath, std::ios::trunc);
-	
+
 			for (int i = 0; i < m_lines.size(); i++) {
 				file << m_lines[i].getText() << "\n";
 			}
-		
-			m_saveLocation = *outPath;
+
+			m_saveLocation = outPath;
 
 			file.close();
 			free(outPath);
 		}
 	}
-	
+
 	// now we should know where to save it, just check a last time, in case the prompt didn't succeed
 	if (!m_saveLocation.empty()) {
 
@@ -183,7 +220,7 @@ void TextView::open() {
 		// clear the textview
 		clear();
 
-		m_saveLocation = *inPath;
+		m_saveLocation = inPath;
 
 		std::ifstream file(m_saveLocation);
 
@@ -208,6 +245,38 @@ void TextView::open(std::string path) {
 	file.close();
 	m_saveLocation = path;
 	paste(iss);
+}
+
+TextView &TextView::getCurrentTextView()
+{
+	return m_textViews[m_currentTextViewIndex];
+}
+
+int TextView::getCurrentTextViewIndex() {
+	return m_currentTextViewIndex;
+}
+
+void TextView::setCurrentTextViewIndex(int index) {
+	m_textViews[m_currentTextViewIndex].m_active = false;
+	m_currentTextViewIndex = index;
+	m_textViews[m_currentTextViewIndex].m_active = true;
+}
+
+TextView & TextView::getTextView(int index)
+{
+	return m_textViews[index];
+}
+
+int TextView::getTextViewNumber()
+{
+	return m_textViews.size();
+}
+
+void TextView::addTextView(TextView textView) {
+	m_textViews.push_back(textView);
+	if (!m_textViews.empty()) m_textViews[m_currentTextViewIndex].m_active = false;
+	m_currentTextViewIndex = m_textViews.size() - 1;
+	m_textViews[m_currentTextViewIndex].m_active = true;
 }
 
 int TextView::getLineIndicatorNumberCount() {
@@ -302,7 +371,6 @@ void TextView::paste(std::stringstream& iss) {
 		while ((start_pos = tmp.find('\t', start_pos)) != std::string::npos) {
 			tmp.replace(start_pos, 1, "    ");
 			start_pos += 4;
-			std::cout << "converted spaces";
 		}
 
 		Line line(tmp);
@@ -317,6 +385,10 @@ void TextView::paste(std::stringstream& iss) {
 int TextView::getLineCount()
 {
 	return m_lines.size();
+}
+
+void TextView::setActive(bool active) {
+	m_active = active;
 }
 
 Cursor* TextView::getCursor()
@@ -334,16 +406,27 @@ void TextView::erase(int charNum, int lineNum) {
 	SyntaxHighlighter::highlight(m_lines[lineNum]);
 }
 
+void TextView::setRPos(sf::Vector2f rpos) {
+	m_rx = rpos.x;
+	m_ry = rpos.y;
+}
+
+void TextView::setRSize(sf::Vector2f rsize) {
+	m_rwidth = rsize.x;
+	m_rheight = rsize.y;
+	std::cout << "NEW RWIDTH: " << m_rwidth;
+}
+
+sf::Vector2f TextView::getRPos()
+{
+	return sf::Vector2f(m_rx, m_ry);
+}
+
+sf::Vector2f TextView::getRSize()
+{
+	return sf::Vector2f(m_rwidth, m_rheight);
+}
+
 Line& TextView::getLine(int i) {
 	return m_lines[i];
-}
-
-void TextView::setPosition(int x, int y) {
-	m_x = x;
-	m_y = y;
-}
-
-void TextView::setSize(int width, int height) {
-	m_width = width;
-	m_height = height;
 }

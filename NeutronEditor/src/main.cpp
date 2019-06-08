@@ -11,14 +11,13 @@
 #include "TextView.h"
 #include "ActionBar.h"
 #include "SyntaxHighlighter.h"
-#include "main.h"
 
 int main() {
 
 	sf::ContextSettings settings;
 	//settings.antialiasingLevel = 8;
 
-	sf::RenderWindow window(sf::VideoMode(800, 600), "Neutron text editor", sf::Style::Default, settings);
+	sf::RenderWindow window(sf::VideoMode(1200, 600), "Neutron text editor", sf::Style::Default, settings);
 
 	Constants::setAbsoluteView(window.getDefaultView());
 
@@ -27,19 +26,14 @@ int main() {
 	Constants::setFont(fontBaseDir + "Hack-Regular.ttf");
 	Constants::parseThemeFile();
 
-	// instanciate a textview : basically a text editor.
-// going with a class aspect will permit later to open multiple editors.
-	TextView mainView(window);
-	mainView.addLine("");
+	TextView::addTextView(TextView(window, 0, 0, 1, 1));
 
 	ActionBar actionBar(window);
-	actionBar.setCurrentTextView(&mainView);
-	//actionBar.setActive(true);
 
 	InputHandler inputHandler;
 
 	while (window.isOpen()) {
-
+		
 		sf::Event event;
 
 		while (window.pollEvent(event)) {
@@ -51,7 +45,9 @@ int main() {
 			else if (event.type == sf::Event::Resized) {
 				// update views with the new window size
 				Constants::setAbsoluteView(event.size.width, event.size.height);
-				mainView.updateView(event.size.width, event.size.height);
+				for (int i = 0; i < TextView::getTextViewNumber(); i++) {
+					TextView::getTextView(i).updateView();
+				}
 				actionBar.updateView(event.size.width, event.size.height);
 			}
 			else {
@@ -63,8 +59,7 @@ int main() {
 					if (res.focusChanged && res.newFocus == InputHandler::Focus::TextView) actionBar.setActive(false);
 				}
 				else {
-					res = inputHandler.handleTextView(event, mainView);
-					actionBar.setCurrentTextView(&mainView);
+					res = inputHandler.handleTextView(event);
 					if (res.focusChanged && res.newFocus == InputHandler::Focus::ActionBar) actionBar.setActive(true);
 				}
 
@@ -73,10 +68,14 @@ int main() {
 
 		window.clear(Constants::BACKGROUND_COLOR);
 
-		mainView.scroll();
-		// draw the text view
-		mainView.draw();
-
+		// check if scrolling is needed for our current text view
+		TextView::getCurrentTextView().scroll();
+		
+		// draw the textviews
+		for (int i = 0; i < TextView::getTextViewNumber(); i++) {
+			TextView::getTextView(i).draw();
+		}
+		
 		// draw the action bar
 		actionBar.draw();
 

@@ -1,7 +1,7 @@
 #include "ActionBar.h"
 
-void ActionBar::action_openConfFile(ActionBar& actionBar) {
+void ActionBar::action_openConfFile(ActionBar& actionBar, TextView& textView) {
 
-	actionBar.m_currentTextView->open("conf.json");
+	textView.open("conf.json");
 	actionBar.setActive(false);
 }

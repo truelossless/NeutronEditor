@@ -14,11 +14,10 @@ public:
 	struct Command {
 		std::string desc;
 		std::vector<char> shortcut;
-		std::function<void(ActionBar&)> function;
+		std::function<void(ActionBar&, TextView&)> function;
 	};
 
 	ActionBar(sf::RenderWindow& window);
-	~ActionBar();
 	
 	void draw();
 	void updateView(int width, int height);
@@ -34,18 +33,26 @@ public:
 	// prompt the user to enter a value
 	void setRequest(std::string request, std::function<void(std::string)> callback);
 
-	void setCurrentTextView(TextView* textView);
-
 	// all action bar commands
-	static void action_close(ActionBar& actionBar);
-	static void action_forceClose(ActionBar& actionBar);
-	static void action_save(ActionBar& actionBar);
-	static void action_open(ActionBar& actionBar);
-	static void action_openThemeFile(ActionBar& actionBar);
-	static void action_openConfFile(ActionBar& actionBar);
-	static void action_reloadTheme(ActionBar& actionBar);
-	static void action_setFontSize(ActionBar& actionBar);
+
+	// file
+	static void action_close(ActionBar& actionBar, TextView& textView);
+	static void action_forceClose(ActionBar& actionBar, TextView& textView);
+	static void action_save(ActionBar& actionBar, TextView& textView);
+	static void action_open(ActionBar& actionBar, TextView& textView);
+	
+	// settings
+	static void action_openThemeFile(ActionBar& actionBar, TextView& textView);
+	static void action_openConfFile(ActionBar& actionBar, TextView& textView);
+	static void action_reloadTheme(ActionBar& actionBar, TextView& textView);
+	static void action_setFontSize(ActionBar& actionBar, TextView& textView);
 	static void action_setFontSizeCallback(std::string text);
+
+	// window
+	static void action_splitHorizontally(ActionBar& actionBar, TextView& textView);
+	static void action_splitVertically(ActionBar& actionBar, TextView& textView);
+	static void action_mergeHorizontally(ActionBar& actionBar, TextView& textView);
+	static void action_mergeVertically(ActionBar& actionBar, TextView& textView);
 
 private:
 	bool m_active = false;
@@ -53,13 +60,13 @@ private:
 
 	sf::RectangleShape m_barShape;
 	sf::RectangleShape m_autocompleteShape;
+	sf::RectangleShape m_terminal;
 	sf::Text m_text;
 	sf::RenderWindow& m_window;
 
 	std::string m_requester;
 	std::string m_command;
 	const std::string m_splash = "Neutron editor v0.1 - SHIFT SPACE to get started :)";
-	TextView* m_currentTextView;
 
 	std::function<void(std::string)> m_callback;
 	std::vector<Command> m_autoCompleteCommands;

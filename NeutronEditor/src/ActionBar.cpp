@@ -4,7 +4,7 @@
 
 #include "Constants.h"
 
-ActionBar::ActionBar(sf::RenderWindow& window):
+ActionBar::ActionBar(sf::RenderWindow& window) :
 	m_window(window) {
 
 	m_command = m_splash;
@@ -17,7 +17,7 @@ ActionBar::ActionBar(sf::RenderWindow& window):
 	m_barShape.setFillColor(Constants::BACKGROUND_COLOR);
 	m_barShape.setOutlineThickness(1);
 	m_barShape.setOutlineColor(Constants::ACTIONBAR_BORDER_COLOR);
-	
+
 	m_text.setFont(Constants::FONT);
 	m_text.setFillColor(Constants::ACTIONBAR_INACTIVE_TEXT_COLOR);
 	m_text.setCharacterSize(Constants::FONT_SIZE);
@@ -30,7 +30,7 @@ ActionBar::ActionBar(sf::RenderWindow& window):
 void ActionBar::draw() {
 
 	m_window.setView(Constants::absoluteView);
-	
+
 	int width = m_window.getSize().x;
 	int height = m_window.getSize().y;
 
@@ -45,7 +45,7 @@ void ActionBar::draw() {
 
 			std::string shortcutString;
 
-			int fillerLength = 8 - (m_autoCompleteCommands[i].shortcut.size()*2);
+			int fillerLength = 8 - (m_autoCompleteCommands[i].shortcut.size() * 2);
 
 			for (int j = 0; j < m_autoCompleteCommands[i].shortcut.size(); j++) {
 				shortcutString += m_autoCompleteCommands[i].shortcut[j];
@@ -63,7 +63,7 @@ void ActionBar::draw() {
 			commandText.setFont(Constants::FONT);
 			commandText.setCharacterSize(Constants::FONT_SIZE);
 			commandText.setString(shortcutString + m_autoCompleteCommands[i].desc);
-			commandText.setPosition(Constants::FONT_WIDTH*3, height - Constants::FONT_SIZE*(i*1.2+3.5));
+			commandText.setPosition(Constants::FONT_WIDTH * 3, height - Constants::FONT_SIZE*(i*1.2 + 3.5));
 			m_window.draw(commandText);
 		}
 	}
@@ -83,6 +83,7 @@ void ActionBar::autoComplete() {
 
 	m_autoCompleteCommands.clear();
 
+	// search a command by desc
 	if (m_command[0] == ':' && m_command.length() > 1) {
 		for (int i = 0; i < m_commands.size(); i++) {
 			if (m_commands[i].desc.find(m_command.substr(1)) != std::string::npos) {
@@ -90,13 +91,20 @@ void ActionBar::autoComplete() {
 			}
 		}
 	}
-	else if(m_command.length() > 0) {
+
+	// cmd command
+	else if (m_command[0] == '!') {
+
+	}
+
+	// command shortcut
+	else if (m_command.length() > 0) {
 		for (int i = 0; i < m_commands.size(); i++) {
-			
+
 			if (m_command.length() > m_commands[i].shortcut.size()) continue;
 
 			bool match = true;
-			
+
 			for (int j = 0; j < m_command.length(); j++) {
 				if (m_command[j] != m_commands[i].shortcut[j]) {
 					match = false;
@@ -114,7 +122,7 @@ void ActionBar::insert(char character) {
 	m_command += character;
 
 	m_text.setString(m_requester + m_command);
-	
+
 	autoComplete();
 }
 
@@ -156,15 +164,22 @@ std::string ActionBar::getText()
 
 void ActionBar::submit()
 {
+	if (m_command.empty()) return;
 
 	// the user is answering a requester
-	if (m_userRequester && !m_command.empty()) {
+	if (m_userRequester) {
 		m_callback(m_command);
 		setActive(false);
 
+	}
+	// exec a shell command
+	else if (m_command[0] == '!') {
+
+		setActive(false);
+	}
 	// the user submits a command
-	} else if(m_autoCompleteCommands.size() == 1){
-		m_autoCompleteCommands[0].function(*this);
+	else if (m_autoCompleteCommands.size() == 1) {
+		m_autoCompleteCommands[0].function(*this, TextView::getCurrentTextView());
 		m_autoCompleteCommands.clear();
 	}
 }
@@ -177,12 +192,4 @@ void ActionBar::setRequest(std::string request, std::function<void(std::string)>
 	m_callback = callback;
 
 	m_text.setString(m_requester + m_command);
-}
-
-void ActionBar::setCurrentTextView(TextView* textView) {
-	m_currentTextView = textView;
-}
-
-ActionBar::~ActionBar()
-{
 }

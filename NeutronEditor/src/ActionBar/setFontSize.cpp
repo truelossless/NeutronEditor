@@ -1,7 +1,7 @@
 #include <json/json.h>
 #include "ActionBar.h"
 
-void ActionBar::action_setFontSize(ActionBar& actionBar) {
+void ActionBar::action_setFontSize(ActionBar& actionBar, TextView& textView) {
 	
 	actionBar.setRequest("New font size (in px): ", action_setFontSizeCallback);
 }

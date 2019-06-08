@@ -76,11 +76,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Documents\Programmation\NeutronEditor\NeutronEditor\include;D:\librairies\jsoncpp\include;D:\librairies\nativefiledialog\src\include;D:\librairies\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\librairies\boost_1_70_0;D:\Documents\Programmation\NeutronEditor\NeutronEditor\include;D:\librairies\jsoncpp\include;D:\librairies\nativefiledialog\src\include;D:\librairies\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0A00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>D:\librairies\jsoncpp\build-static;D:\librairies\nativefiledialog\build\lib\Release\x64;D:\librairies\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libjsoncpp.a;nfd.lib;sfml-system.lib;sfml-window.lib;sfml-graphics.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\librairies\boost_1_70_0\bin.v2\libs\filesystem\build\msvc-14.1\release\address-model-64\link-static\threading-multi;D:\librairies\jsoncpp\build-static;D:\librairies\nativefiledialog\build\lib\Release\x64;D:\librairies\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libboost_filesystem-vc141-mt-x64-1_70.lib;libjsoncpp.a;nfd.lib;sfml-system.lib;sfml-window.lib;sfml-graphics.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -89,11 +90,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Documents\Programmation\NeutronEditor\NeutronEditor\include;D:\librairies\jsoncpp\include;D:\librairies\nativefiledialog\src\include;D:\librairies\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\librairies\boost_1_70_0;D:\Documents\Programmation\NeutronEditor\NeutronEditor\include;D:\librairies\jsoncpp\include;D:\librairies\nativefiledialog\src\include;D:\librairies\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0A00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>D:\librairies\jsoncpp\build-static;D:\librairies\nativefiledialog\build\lib\Release\x64;D:\librairies\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libjsoncpp.a;nfd.lib;sfml-system.lib;sfml-window.lib;sfml-graphics.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\librairies\boost_1_70_0\bin.v2\libs\filesystem\build\msvc-14.1\release\address-model-64\link-static\threading-multi;D:\librairies\jsoncpp\build-static;D:\librairies\nativefiledialog\build\lib\Release\x64;D:\librairies\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libboost_filesystem-vc141-mt-x64-1_70.lib;libjsoncpp.a;nfd.lib;sfml-system.lib;sfml-window.lib;sfml-graphics.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -104,13 +106,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Documents\Programmation\NeutronEditor\NeutronEditor\include;D:\librairies\jsoncpp\include;D:\librairies\nativefiledialog\src\include;D:\librairies\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\librairies\boost_1_70_0;D:\Documents\Programmation\NeutronEditor\NeutronEditor\include;D:\librairies\jsoncpp\include;D:\librairies\nativefiledialog\src\include;D:\librairies\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0A00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>D:\librairies\jsoncpp\build-static;D:\librairies\nativefiledialog\build\lib\Release\x64;D:\librairies\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libjsoncpp.a;nfd.lib;sfml-system.lib;sfml-window.lib;sfml-graphics.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\librairies\boost_1_70_0\bin.v2\libs\filesystem\build\msvc-14.1\release\address-model-64\link-static\threading-multi;D:\librairies\jsoncpp\build-static;D:\librairies\nativefiledialog\build\lib\Release\x64;D:\librairies\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libboost_filesystem-vc141-mt-x64-1_70.lib;libjsoncpp.a;nfd.lib;sfml-system.lib;sfml-window.lib;sfml-graphics.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -121,25 +124,30 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Documents\Programmation\NeutronEditor\NeutronEditor\include;D:\librairies\jsoncpp\include;D:\librairies\nativefiledialog\src\include;D:\librairies\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\librairies\boost_1_70_0;D:\Documents\Programmation\NeutronEditor\NeutronEditor\include;D:\librairies\jsoncpp\include;D:\librairies\nativefiledialog\src\include;D:\librairies\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0A00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>D:\librairies\jsoncpp\build-static;D:\librairies\nativefiledialog\build\lib\Release\x64;D:\librairies\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libjsoncpp.a;nfd.lib;sfml-system.lib;sfml-window.lib;sfml-graphics.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\librairies\boost_1_70_0\bin.v2\libs\filesystem\build\msvc-14.1\release\address-model-64\link-static\threading-multi;D:\librairies\jsoncpp\build-static;D:\librairies\nativefiledialog\build\lib\Release\x64;D:\librairies\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libboost_filesystem-vc141-mt-x64-1_70.lib;libjsoncpp.a;nfd.lib;sfml-system.lib;sfml-window.lib;sfml-graphics.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\ActionBar.cpp" />
     <ClCompile Include="src\ActionBar\close.cpp" />
     <ClCompile Include="src\ActionBar\commands.cpp" />
+    <ClCompile Include="src\ActionBar\mergeHorizontally.cpp" />
+    <ClCompile Include="src\ActionBar\mergeVertically.cpp" />
     <ClCompile Include="src\ActionBar\open.cpp" />
     <ClCompile Include="src\ActionBar\openConfFile.cpp" />
     <ClCompile Include="src\ActionBar\openThemeFile.cpp" />
     <ClCompile Include="src\ActionBar\reloadTheme.cpp" />
     <ClCompile Include="src\ActionBar\save.cpp" />
     <ClCompile Include="src\ActionBar\setFontSize.cpp" />
+    <ClCompile Include="src\ActionBar\splitHorizontally.cpp" />
+    <ClCompile Include="src\ActionBar\splitVertically.cpp" />
     <ClCompile Include="src\Character.cpp" />
     <ClCompile Include="src\Constants.cpp" />
     <ClCompile Include="src\Cursor.cpp" />
@@ -158,7 +166,6 @@
     <ClInclude Include="include\Line.h" />
     <ClInclude Include="include\SyntaxHighlighter.h" />
     <ClInclude Include="include\TextView.h" />
-    <ClInclude Include="src\main.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

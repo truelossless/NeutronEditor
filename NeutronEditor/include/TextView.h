@@ -7,25 +7,23 @@
 #include "Line.h"
 #include "Cursor.h"
 
-class TextView
-{
+class TextView {
 public:
-	TextView(sf::RenderWindow& window);
+
+	// take the coordinates as fractions
+	TextView(sf::RenderWindow& window, float rx, float ry, float rwidth, float rheight);
 	~TextView();
-	
+
 	// basic operations
 	void addLine(std::string line);
 	void insertLine(int lineNum, Line& line);
 	void insertLine(int lineNum);
 	void deleteLine(int lineNum);
 	int getLineCount();
+	void setActive(bool active);
 
 	Cursor* getCursor();
 	Line& getLine(int i);
-
-	// editor size & position
-	void setPosition(int x, int y);
-	void setSize(int width, int height);
 
 	// user-triggered operations
 	int enterInsertLine(int charnum, int lineNum);
@@ -36,13 +34,19 @@ public:
 
 	void insert(char character, int charNum, int lineNum);
 	void erase(int charNum, int lineNum);
-	
+
+	// size of the editor
+	void setRPos(sf::Vector2f rpos);
+	void setRSize(sf::Vector2f rsize);
+	sf::Vector2f getRPos();
+	sf::Vector2f getRSize();
+
 	// drawing operations
 	void draw();
 	int getLineIndicatorNumberCount();
 
 	// scrolling operations
-	void updateView(int width, int height);
+	void updateView();
 	void moveView(int deltaX, int deltaY);
 	void scroll();
 
@@ -52,23 +56,45 @@ public:
 	void open();
 	void open(std::string path);
 
+	// static methods
+	static TextView& getCurrentTextView();
+	static int getCurrentTextViewIndex();
+	static void setCurrentTextViewIndex(int index);
+	static TextView& getTextView(int index);
+	static int getTextViewNumber();
+	static void addTextView(TextView textView);
+
 private:
+
+	// all the textviews are available here
+	static std::vector<TextView> m_textViews;
+	static int m_currentTextViewIndex;
+	
 	sf::RenderWindow& m_window;
 	std::vector<Line> m_lines;
 
+	bool m_active = false;
+
 	// main view
 	sf::View m_view;
+	sf::View m_absoluteView;
 	sf::View m_absoluteXView;
 	sf::View m_absoluteYView;
-	
+
 	sf::RectangleShape m_lineIndicator;
 
 	Cursor m_cursor;
-	
-	int m_x = 0;
-	int m_y = 0;
+
+	int m_x;
+	int m_y;
 	int m_width;
 	int m_height;
+
+	// fraction coordinates
+	float m_rx;
+	float m_ry;
+	float m_rwidth;
+	float m_rheight;
 
 	std::string m_saveLocation;
 };

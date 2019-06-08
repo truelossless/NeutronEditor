@@ -27,7 +27,7 @@ public:
 	InputHandler();
 	~InputHandler();
 	
-	Result handleTextView(sf::Event& event, TextView& textView);
+	Result handleTextView(sf::Event& event);
 	Result handleActionBar(sf::Event& event, ActionBar& actionBar);
 };
 

@@ -14,12 +14,13 @@ InputHandler::~InputHandler()
 {
 }
 
-InputHandler::Result InputHandler::handleTextView(sf::Event& event, TextView& textView) {
+InputHandler::Result InputHandler::handleTextView(sf::Event& event) {
 
 	Result res;
+	TextView* textView = &TextView::getCurrentTextView();
 
-	Cursor* cursor = textView.getCursor();
-	int currentLineLength = textView.getLine(cursor->getLine()).getText().length();
+	Cursor* cursor = textView->getCursor();
+	int currentLineLength = textView->getLine(cursor->getLine()).getText().length();
 
 	bool ctrlPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl);
 	bool shiftPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
@@ -32,10 +33,10 @@ InputHandler::Result InputHandler::handleTextView(sf::Event& event, TextView& te
 
 				// jump to the last word
 				if (ctrlPressed) {
-					int previousWordPos = textView.getLine(cursor->getLine()).getText().rfind(' ', cursor->getPos() - 2);
+					int previousWordPos = textView->getLine(cursor->getLine()).getText().rfind(' ', cursor->getPos() - 2);
 					if (previousWordPos != std::string::npos) {
 						previousWordPos++;
-						while (textView.getLine(cursor->getLine()).getText()[previousWordPos] == ' ') {
+						while (textView->getLine(cursor->getLine()).getText()[previousWordPos] == ' ') {
 							previousWordPos--;
 						}
 						if (previousWordPos < 0) previousWordPos = 0;
@@ -48,13 +49,13 @@ InputHandler::Result InputHandler::handleTextView(sf::Event& event, TextView& te
 				else {
 					cursor->left();
 				}
-				SyntaxHighlighter::highlight(textView.getLine(cursor->getLine()));
+				SyntaxHighlighter::highlight(textView->getLine(cursor->getLine()));
 			}
 			else if (cursor->getLine() > 0) {
 				cursor->up();
-				cursor->setPos(textView.getLine(cursor->getLine()).getText().length());
-				SyntaxHighlighter::highlight(textView.getLine(cursor->getLine()));
-				SyntaxHighlighter::highlight(textView.getLine(cursor->getLine() + 1));
+				cursor->setPos(textView->getLine(cursor->getLine()).getText().length());
+				SyntaxHighlighter::highlight(textView->getLine(cursor->getLine()));
+				SyntaxHighlighter::highlight(textView->getLine(cursor->getLine() + 1));
 			}
 		}
 
@@ -64,15 +65,15 @@ InputHandler::Result InputHandler::handleTextView(sf::Event& event, TextView& te
 
 				// jump to the next word
 				if (ctrlPressed) {
-					int nextWordPos = textView.getLine(cursor->getLine()).getText().find(' ', cursor->getPos());
+					int nextWordPos = textView->getLine(cursor->getLine()).getText().find(' ', cursor->getPos());
 					if (nextWordPos != std::string::npos) {
 						nextWordPos++;
-						while (textView.getLine(cursor->getLine()).getText()[nextWordPos] == ' ') {
+						while (textView->getLine(cursor->getLine()).getText()[nextWordPos] == ' ') {
 							nextWordPos++;
 						}
 					}
 					else {
-						nextWordPos = textView.getLine(cursor->getLine()).getText().length();
+						nextWordPos = textView->getLine(cursor->getLine()).getText().length();
 					}
 
 					cursor->setPos(nextWordPos);
@@ -80,13 +81,13 @@ InputHandler::Result InputHandler::handleTextView(sf::Event& event, TextView& te
 				else {
 					cursor->right();
 				}
-				SyntaxHighlighter::highlight(textView.getLine(cursor->getLine()));
+				SyntaxHighlighter::highlight(textView->getLine(cursor->getLine()));
 			}
-			else if (cursor->getLine() < textView.getLineCount() - 1) {
+			else if (cursor->getLine() < textView->getLineCount() - 1) {
 				cursor->setPos(0);
 				cursor->down();
-				SyntaxHighlighter::highlight(textView.getLine(cursor->getLine()));
-				SyntaxHighlighter::highlight(textView.getLine(cursor->getLine() - 1));
+				SyntaxHighlighter::highlight(textView->getLine(cursor->getLine()));
+				SyntaxHighlighter::highlight(textView->getLine(cursor->getLine() - 1));
 			}
 		}
 
@@ -95,28 +96,50 @@ InputHandler::Result InputHandler::handleTextView(sf::Event& event, TextView& te
 
 				cursor->up();
 
-				if (cursor->getPos() > textView.getLine(cursor->getLine()).getText().length()) {
-					cursor->setPos(textView.getLine(cursor->getLine()).getText().length());
+				if (cursor->getPos() > textView->getLine(cursor->getLine()).getText().length()) {
+					cursor->setPos(textView->getLine(cursor->getLine()).getText().length());
 				}
 
-				SyntaxHighlighter::highlight(textView.getLine(cursor->getLine()));
-				SyntaxHighlighter::highlight(textView.getLine(cursor->getLine() + 1));
+				SyntaxHighlighter::highlight(textView->getLine(cursor->getLine()));
+				SyntaxHighlighter::highlight(textView->getLine(cursor->getLine() + 1));
 			}
 		}
 
 		else if (event.key.code == sf::Keyboard::Down) {
-			if (cursor->getLine() < textView.getLineCount() - 1) {
+			if (cursor->getLine() < textView->getLineCount() - 1) {
 				cursor->down();
 
 
-				if (cursor->getPos() > textView.getLine(cursor->getLine()).getText().length()) {
-					cursor->setPos(textView.getLine(cursor->getLine()).getText().length());
+				if (cursor->getPos() > textView->getLine(cursor->getLine()).getText().length()) {
+					cursor->setPos(textView->getLine(cursor->getLine()).getText().length());
 				}
 
-				SyntaxHighlighter::highlight(textView.getLine(cursor->getLine()));
-				SyntaxHighlighter::highlight(textView.getLine(cursor->getLine() - 1));
+				SyntaxHighlighter::highlight(textView->getLine(cursor->getLine()));
+				SyntaxHighlighter::highlight(textView->getLine(cursor->getLine() - 1));
 
 			}
+		}
+
+		// change window
+		else if (event.key.code == sf::Keyboard::Tab && ctrlPressed) {
+			
+			int index = TextView::getCurrentTextViewIndex();
+
+			if (shiftPressed) {
+				index--;
+			}
+			else {
+				index++;
+			}
+
+			if (index == TextView::getTextViewNumber()) {
+				index = 0;
+			}
+			else if (index == -1) {
+				index = TextView::getTextViewNumber() - 1;
+			}
+			
+			TextView::setCurrentTextViewIndex(index);
 		}
 
 		else if (event.key.code == sf::Keyboard::Delete) {
@@ -125,27 +148,27 @@ InputHandler::Result InputHandler::handleTextView(sf::Event& event, TextView& te
 			if (shiftPressed) {
 
 				if (cursor->getLine() == 0) {
-					textView.addLine("");
+					textView->addLine("");
 				}
 
-				textView.deleteLine(cursor->getLine());
+				textView->deleteLine(cursor->getLine());
 
-				if (cursor->getLine() == textView.getLineCount()) {
+				if (cursor->getLine() == textView->getLineCount()) {
 					cursor->up();
 				}
 
-				if (cursor->getPos() > textView.getLine(cursor->getLine()).getText().length()) {
-					cursor->setPos(textView.getLine(cursor->getLine()).getText().length());
+				if (cursor->getPos() > textView->getLine(cursor->getLine()).getText().length()) {
+					cursor->setPos(textView->getLine(cursor->getLine()).getText().length());
 				}
 
-				SyntaxHighlighter::highlight(textView.getLine(cursor->getLine()));
+				SyntaxHighlighter::highlight(textView->getLine(cursor->getLine()));
 			}
 			else {
 				if (cursor->getPos() < currentLineLength) {
-					textView.erase(cursor->getPos(), cursor->getLine());
+					textView->erase(cursor->getPos(), cursor->getLine());
 				}
-				else if (textView.getLineCount() - 1 > cursor->getLine()) {
-					textView.backspaceDeleteLine(cursor->getLine() + 1);
+				else if (textView->getLineCount() - 1 > cursor->getLine()) {
+					textView->backspaceDeleteLine(cursor->getLine() + 1);
 				}
 			}
 
@@ -154,12 +177,12 @@ InputHandler::Result InputHandler::handleTextView(sf::Event& event, TextView& te
 		// paste text
 		else if (event.key.code == sf::Keyboard::V && ctrlPressed) {
 		std::string clipboardContent = sf::Clipboard::getString();
-			textView.paste(clipboardContent);
+			textView->paste(clipboardContent);
 		}
 
 		// save a file
 		else if (event.key.code == sf::Keyboard::S && ctrlPressed) {
-			textView.save();
+			textView->save();
 		}
 	}
 
@@ -172,7 +195,7 @@ InputHandler::Result InputHandler::handleTextView(sf::Event& event, TextView& te
 
 			// delete all spaces together
 			for (int i = cursor->getPos() - 1; i >= 0; i--) {
-				if (textView.getLine(cursor->getLine()).getText()[i] == ' ') eraseNum++;
+				if (textView->getLine(cursor->getLine()).getText()[i] == ' ') eraseNum++;
 				else break;
 			}
 
@@ -181,14 +204,14 @@ InputHandler::Result InputHandler::handleTextView(sf::Event& event, TextView& te
 			// basic erase
 			if (cursor->getPos() > 0) {
 				for (int i = 0; i < eraseNum; i++) {
-					textView.erase(cursor->getPos() - 1, cursor->getLine());
+					textView->erase(cursor->getPos() - 1, cursor->getLine());
 					cursor->left();
 				}
 			}
 
 			// append line to the previous one
 			else if (cursor->getLine() > 0) {
-				cursor->setPos(textView.backspaceDeleteLine(cursor->getLine()));
+				cursor->setPos(textView->backspaceDeleteLine(cursor->getLine()));
 				cursor->up();
 			}
 		}
@@ -196,7 +219,7 @@ InputHandler::Result InputHandler::handleTextView(sf::Event& event, TextView& te
 		// enter
 		else if (event.text.unicode == '\r') {
 
-			cursor->setPos(textView.enterInsertLine(cursor->getPos(), cursor->getLine()));
+			cursor->setPos(textView->enterInsertLine(cursor->getPos(), cursor->getLine()));
 			cursor->down();
 		}
 
@@ -204,39 +227,39 @@ InputHandler::Result InputHandler::handleTextView(sf::Event& event, TextView& te
 		else if (event.text.unicode == '\t') {
 
 			for (int i = 0; i < 4; i++) {
-				textView.insert(' ', cursor->getPos() + i, cursor->getLine());
+				textView->insert(' ', cursor->getPos() + i, cursor->getLine());
 			}
 			cursor->right(4);
 		}
 
 		else if (event.text.unicode == '{') {
-			textView.insert('{', cursor->getPos(), cursor->getLine());
+			textView->insert('{', cursor->getPos(), cursor->getLine());
 			cursor->right();
-			textView.insert('}', cursor->getPos(), cursor->getLine());
+			textView->insert('}', cursor->getPos(), cursor->getLine());
 		}
 
 		else if (event.text.unicode == '(') {
-			textView.insert('(', cursor->getPos(), cursor->getLine());
+			textView->insert('(', cursor->getPos(), cursor->getLine());
 			cursor->right();
-			textView.insert(')', cursor->getPos(), cursor->getLine());
+			textView->insert(')', cursor->getPos(), cursor->getLine());
 		}
 
 		else if (event.text.unicode == '[') {
-			textView.insert('[', cursor->getPos(), cursor->getLine());
+			textView->insert('[', cursor->getPos(), cursor->getLine());
 			cursor->right();
-			textView.insert(']', cursor->getPos(), cursor->getLine());
+			textView->insert(']', cursor->getPos(), cursor->getLine());
 		}
 
 		else if (event.text.unicode == '"') {
-			textView.insert('"', cursor->getPos(), cursor->getLine());
+			textView->insert('"', cursor->getPos(), cursor->getLine());
 			cursor->right();
-			textView.insert('"', cursor->getPos(), cursor->getLine());
+			textView->insert('"', cursor->getPos(), cursor->getLine());
 		}
 
 		else if (event.text.unicode == '\'') {
-			textView.insert('\'', cursor->getPos(), cursor->getLine());
+			textView->insert('\'', cursor->getPos(), cursor->getLine());
 			cursor->right();
-			textView.insert('\'', cursor->getPos(), cursor->getLine());
+			textView->insert('\'', cursor->getPos(), cursor->getLine());
 		}
 
 		// actionbar shortcut
@@ -252,7 +275,7 @@ InputHandler::Result InputHandler::handleTextView(sf::Event& event, TextView& te
 
 		// CTRL + ALT is ALT GR
 		else if (!ctrlPressed || ctrlPressed && altPressed) {
-			textView.insert(static_cast<char>(event.text.unicode), cursor->getPos(), cursor->getLine());
+			textView->insert(static_cast<char>(event.text.unicode), cursor->getPos(), cursor->getLine());
 			cursor->right();
 		}
 	}

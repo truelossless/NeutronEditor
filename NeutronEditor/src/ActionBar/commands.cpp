@@ -48,5 +48,30 @@ const std::vector<ActionBar::Command> ActionBar::m_commands = {
 		"reload the theme",
 		{'s', 't', 'r'},
 		ActionBar::action_reloadTheme
-	}
+	},
+
+	{
+		"merge window horizontally",
+		{'w', 'm', 'h'},
+		ActionBar::action_mergeHorizontally
+	},
+
+	{
+		"merge window vertically",
+		{'w', 'm', 'v'},
+		ActionBar::action_mergeVertically
+	},
+	{
+		"split window horizontally",
+		{'w', 's', 'h'},
+		ActionBar::action_splitHorizontally
+	},
+
+	{
+		"split window vertically",
+		{'w', 's', 'v'},
+		ActionBar::action_splitVertically
+	},
+
+
 };

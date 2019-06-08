@@ -18,7 +18,6 @@ Character& Line::getCharacter(int charNum) {
 }
 
 void Line::insert(char character, int charNum) {
-	std::cout << charNum;
 	m_characters.insert(m_characters.begin() + charNum, character);
 	m_line.insert(charNum, 1, character);
 }

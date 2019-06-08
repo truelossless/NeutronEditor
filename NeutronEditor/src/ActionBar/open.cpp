@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void ActionBar::action_open(ActionBar& actionBar) {
-	actionBar.m_currentTextView->open();
+void ActionBar::action_open(ActionBar& actionBar, TextView& textView) {
+	textView.open();
 	actionBar.setActive(false);
 }
