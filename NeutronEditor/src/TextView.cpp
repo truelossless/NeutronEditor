@@ -1,12 +1,15 @@
 #include "TextView.h"
 
-#include "Constants.h"
-#include "SyntaxHighlighter.h"
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 #include <nfd.h>
+
+#include "Constants.h"
+#include "SyntaxHighlighter.h"
+#include "Project.h"
+
 
 std::vector<TextView> TextView::m_textViews;
 int TextView::m_currentTextViewIndex = 0;
@@ -54,6 +57,16 @@ void TextView::draw() {
 
 	// draw all the characters
 	for (int i = 0; i < m_lines.size(); i++) {
+
+		// if the line is errored, draw a red background
+		// TODO: register this color in the theme
+		if (m_lines[i].errored()) {
+			sf::RectangleShape errorBg(sf::Vector2f(m_width, Constants::FONT_SIZE));
+			errorBg.setFillColor(sf::Color(255, 0, 0, 50));
+			errorBg.setPosition(0, i*Constants::FONT_SIZE);
+			m_window.draw(errorBg);
+		}
+
 		for (int j = 0; j < m_lines[i].getText().length(); j++) {
 			sf::Text character = m_lines[i].getCharacter(j).getText();
 			character.setPosition(baseX + Constants::FONT_WIDTH*j, Constants::FONT_SIZE*i);
@@ -152,17 +165,6 @@ void TextView::scroll() {
 		std::cout << "new coords /x: " << newCoords.y << std::endl;
 	}
 
-	//// scroll left
-	//if (coords.x < m_x + m_lineIndicator.getLocalBounds().width) {
-	//	std::cout << "scrollnig left !!" << std::endl;
-	//	newCoords.x = m_cursor.getShape().getGlobalBounds().left - m_lineIndicator.getGlobalBounds().width;
-	//	if (m_cursor.getPos() == 0) newCoords.x = m_x;
-	//}
-	//// scroll right
-	//else if (coords.x + Constants::FONT_WIDTH > m_x + m_width) {
-	//	newCoords.x =  - (m_x + m_width) / 2 + m_cursor.getShape().getGlobalBounds().left + Constants::FONT_WIDTH;
-	//}
-
 	m_view.setCenter(newCoords.x, newCoords.y);
 	m_absoluteXView.setCenter(m_absoluteXView.getCenter().x, newCoords.y);
 	m_absoluteYView.setCenter(newCoords.x, m_absoluteYView.getCenter().y);
@@ -173,16 +175,25 @@ void TextView::clear() {
 		Line("")
 	};
 
+	m_saveLocation = "";
 	m_cursor.set(0, 0);
 }
 
 void TextView::save() {
 
+	// remove the linted errors
+	for (int i = 0; i < m_lines.size(); i++) {
+		m_lines[i].setErrored(false);
+	}
+
 	// if we don't know where to save this file, ask the user
 	if (m_saveLocation.empty()) {
 
-		nfdchar_t *outPath = NULL;
-		nfdresult_t result = NFD_SaveDialog(NULL, NULL, &outPath);
+		// don't bother to save if we have an empty file
+		if (m_lines.size() == 1 && m_lines[0].getText().empty()) return;
+
+		nfdchar_t *outPath = nullptr;
+		nfdresult_t result = NFD_SaveDialog(nullptr, nullptr, &outPath);
 
 		if (result == NFD_OKAY) {
 
@@ -202,18 +213,27 @@ void TextView::save() {
 	// now we should know where to save it, just check a last time, in case the prompt didn't succeed
 	if (!m_saveLocation.empty()) {
 
+		Project& project = Project::getCurrentProject();
+
 		std::ofstream file(m_saveLocation, std::ios::trunc);
 
 		for (int i = 0; i < m_lines.size(); i++) {
 			file << m_lines[i].getText() << "\n";
+		}
+
+		file.close();
+
+		// we are saving the project's dotfile, parse again the dotfile
+		if (m_saveLocation == project.getDotFilePath()) {
+			project.parseDotFile();
 		}
 	}
 }
 
 void TextView::open() {
 
-	nfdchar_t *inPath = NULL;
-	nfdresult_t result = NFD_OpenDialog(NULL, NULL, &inPath);
+	nfdchar_t *inPath = nullptr;
+	nfdresult_t result = NFD_OpenDialog(nullptr, nullptr, &inPath);
 
 	if (result == NFD_OKAY) {
 
@@ -245,6 +265,11 @@ void TextView::open(std::string path) {
 	file.close();
 	m_saveLocation = path;
 	paste(iss);
+}
+
+std::string TextView::getSaveLocation()
+{
+	return m_saveLocation;
 }
 
 TextView &TextView::getCurrentTextView()
@@ -414,7 +439,6 @@ void TextView::setRPos(sf::Vector2f rpos) {
 void TextView::setRSize(sf::Vector2f rsize) {
 	m_rwidth = rsize.x;
 	m_rheight = rsize.y;
-	std::cout << "NEW RWIDTH: " << m_rwidth;
 }
 
 sf::Vector2f TextView::getRPos()

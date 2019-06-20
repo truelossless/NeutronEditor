@@ -6,6 +6,7 @@
 
 #include "Cursor.h"
 #include "TextView.h"
+#include "ConsoleCommand.h"
 
 class ActionBar
 {
@@ -30,6 +31,9 @@ public:
 	std::string getText();
 	void submit();
 
+	// set a notification for a certain time instead of the splash text
+	void setNotif(std::string notif);
+
 	// prompt the user to enter a value
 	void setRequest(std::string request, std::function<void(std::string)> callback);
 
@@ -41,6 +45,13 @@ public:
 	static void action_save(ActionBar& actionBar, TextView& textView);
 	static void action_open(ActionBar& actionBar, TextView& textView);
 	
+	// project
+	static void action_createProject(ActionBar& actionBar, TextView& textView);
+	static void action_openProjectDotFile(ActionBar& actionBar, TextView& textView);
+	static void action_openProject(ActionBar& actionBar, TextView& textView);
+	static void action_closeProject(ActionBar& actionBar, TextView& textView);
+	static void action_runProject(ActionBar& actionBar, TextView& textView);
+
 	// settings
 	static void action_openThemeFile(ActionBar& actionBar, TextView& textView);
 	static void action_openConfFile(ActionBar& actionBar, TextView& textView);
@@ -63,13 +74,20 @@ private:
 	sf::RectangleShape m_terminal;
 	sf::Text m_text;
 	sf::RenderWindow& m_window;
+	sf::Clock m_notifClock;
 
 	std::string m_requester;
 	std::string m_command;
+
+	// notification that override the main text on the action bar, based on the current action
+	std::string m_notif;
+	
 	const std::string m_splash = "Neutron editor v0.1 - SHIFT SPACE to get started :)";
 
 	std::function<void(std::string)> m_callback;
 	std::vector<Command> m_autoCompleteCommands;
+
+	ConsoleCommand m_consoleCommand;
 
 	static const std::vector<Command> m_commands;
 

@@ -78,6 +78,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\librairies\boost_1_70_0;D:\Documents\Programmation\NeutronEditor\NeutronEditor\include;D:\librairies\jsoncpp\include;D:\librairies\nativefiledialog\src\include;D:\librairies\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0A00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>D:\librairies\boost_1_70_0\bin.v2\libs\filesystem\build\msvc-14.1\release\address-model-64\link-static\threading-multi;D:\librairies\jsoncpp\build-static;D:\librairies\nativefiledialog\build\lib\Release\x64;D:\librairies\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -92,6 +93,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\librairies\boost_1_70_0;D:\Documents\Programmation\NeutronEditor\NeutronEditor\include;D:\librairies\jsoncpp\include;D:\librairies\nativefiledialog\src\include;D:\librairies\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0A00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>D:\librairies\boost_1_70_0\bin.v2\libs\filesystem\build\msvc-14.1\release\address-model-64\link-static\threading-multi;D:\librairies\jsoncpp\build-static;D:\librairies\nativefiledialog\build\lib\Release\x64;D:\librairies\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -108,6 +110,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\librairies\boost_1_70_0;D:\Documents\Programmation\NeutronEditor\NeutronEditor\include;D:\librairies\jsoncpp\include;D:\librairies\nativefiledialog\src\include;D:\librairies\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0A00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -126,6 +129,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\librairies\boost_1_70_0;D:\Documents\Programmation\NeutronEditor\NeutronEditor\include;D:\librairies\jsoncpp\include;D:\librairies\nativefiledialog\src\include;D:\librairies\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN32_WINNT=0x0A00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -135,6 +139,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ActionBar\runProject.cpp" />
+    <ClCompile Include="src\Linter.cpp" />
+    <ClCompile Include="src\ActionBar\closeProject.cpp" />
+    <ClCompile Include="src\ActionBar\openProjectDotFile.cpp" />
+    <ClCompile Include="src\Project.cpp" />
+    <ClCompile Include="src\ActionBar\createProject.cpp" />
+    <ClCompile Include="src\ActionBar\openProject.cpp" />
+    <ClCompile Include="src\ConsoleCommand.cpp" />
     <ClCompile Include="src\ActionBar.cpp" />
     <ClCompile Include="src\ActionBar\close.cpp" />
     <ClCompile Include="src\ActionBar\commands.cpp" />
@@ -158,6 +170,7 @@
     <ClCompile Include="src\TextView.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\ConsoleCommand.h" />
     <ClInclude Include="include\ActionBar.h" />
     <ClInclude Include="include\Character.h" />
     <ClInclude Include="include\Constants.h" />
@@ -166,6 +179,8 @@
     <ClInclude Include="include\Line.h" />
     <ClInclude Include="include\SyntaxHighlighter.h" />
     <ClInclude Include="include\TextView.h" />
+    <ClInclude Include="include\Project.h" />
+    <ClInclude Include="include\Linter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

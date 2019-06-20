@@ -7,10 +7,10 @@ Inspired by vim, emacs and more modern editors !
 
 It is made using C++ and SFML, so no HTML bullshit here (jk we luv u vs code).  
 Neutron is intended to be FAST (well in the future because right now not really ... :D).  
-BUT ... It's really FAST to start, so it's a really convenient editor for quicky editing files !
+BUT ... It's really FAST to start, so it's a really convenient editor for quickly editing files !
 
-Right now, Neutron is under heavy development so don't expect to much from it.  
-We're not even close to a pre-alpha version, so calm down if evrything is broken, and if the code is ugly D:
+Right now, Neutron is under heavy development so don't expect too much from it.  
+We're not even close to a pre-alpha version, so calm down if everything is broken, and if the code is ugly D:
 
 On a side note, I'd love to integrate your pull requests !  
 I'll keep a warm place somewhere in the editor to display your name :)
@@ -26,6 +26,7 @@ I'll keep a warm place somewhere in the editor to display your name :)
 - commands
 - theming
 - pasting text
+- basic shell integration
 
 ### Not supported
 
@@ -40,9 +41,11 @@ I'll keep a warm place somewhere in the editor to display your name :)
 - ... implement the unsupported features
 - fix bugs (maybe)
 - git integration
-- shell integration via the `!` command
+- linter integration
 - custom line height
 - custom character spacing
+- improve project support
+- merge splitted windows
 
 ### Known bugs	
 
@@ -60,11 +63,20 @@ The cursor is moving, and then the view is moving, which break the smoothness wh
 
 **Moderate**
 
-- Quotes inside quotes is not working well (try putting double quotes inside single quotes)
-It comes from my loops to check quotes in SyntaxHighlighter.cpp, and order of the m_quotes array.
-I would need to check the pos for all the different types of quotes, and start highlighting for the first one.
+- Multiple quotes on the same line isn't working well
 
-## Keybinds
+- Text going under the action bar
+
+## Shortcuts
+
+Like any modern text editor, you have access to basic shortcuts:
+
+- `CTRL` `v`: paste
+- `CTRL` `s`: save the current file
+- `CTRL` `TAB`: switch to the next window
+- `CTRL+SHIFT` `TAB`: switch to the last window
+
+## Commands
 
 After using the master key `SHIFT+SPACE`, you have access to a variety of commands.
 

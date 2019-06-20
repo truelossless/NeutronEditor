@@ -10,7 +10,8 @@
 #include "InputHandler.h"
 #include "TextView.h"
 #include "ActionBar.h"
-#include "SyntaxHighlighter.h"
+#include "Project.h"
+#include "Linter.h"
 
 int main() {
 
@@ -18,7 +19,6 @@ int main() {
 	//settings.antialiasingLevel = 8;
 
 	sf::RenderWindow window(sf::VideoMode(1200, 600), "Neutron text editor", sf::Style::Default, settings);
-
 	Constants::setAbsoluteView(window.getDefaultView());
 
 	std::string fontBaseDir = "C:/Windows/Fonts/";
@@ -27,10 +27,14 @@ int main() {
 	Constants::parseThemeFile();
 
 	TextView::addTextView(TextView(window, 0, 0, 1, 1));
-
 	ActionBar actionBar(window);
-
 	InputHandler inputHandler;
+
+	Project project;
+	Project::setCurrentProject(project);
+
+	Linter cppLint;
+	std::cout << cppLint.executableInPath();
 
 	while (window.isOpen()) {
 		
@@ -65,6 +69,8 @@ int main() {
 
 			}
 		}
+
+		Project::runCompileTasks();
 
 		window.clear(Constants::BACKGROUND_COLOR);
 

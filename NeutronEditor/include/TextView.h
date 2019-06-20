@@ -55,6 +55,7 @@ public:
 	void save();
 	void open();
 	void open(std::string path);
+	std::string getSaveLocation();
 
 	// static methods
 	static TextView& getCurrentTextView();
@@ -96,6 +97,6 @@ private:
 	float m_rwidth;
 	float m_rheight;
 
-	std::string m_saveLocation;
+	std::string m_saveLocation = "";
 };
 

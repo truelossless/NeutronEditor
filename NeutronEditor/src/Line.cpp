@@ -20,6 +20,8 @@ Character& Line::getCharacter(int charNum) {
 void Line::insert(char character, int charNum) {
 	m_characters.insert(m_characters.begin() + charNum, character);
 	m_line.insert(charNum, 1, character);
+
+	m_errored = false;
 }
 
 void Line::append(std::string text) {
@@ -27,11 +29,24 @@ void Line::append(std::string text) {
 		m_characters.push_back(text[i]);
 	}
 	m_line += text;
+
+	m_errored = false;
 }
 
 void Line::erase(int charNum) {
 	m_characters.erase(m_characters.begin() + charNum);
 	m_line.erase(charNum, 1);
+
+	m_errored = false;
+}
+
+bool Line::errored()
+{
+	return m_errored;
+}
+
+void Line::setErrored(bool errored) {
+	m_errored = errored;
 }
 
 std::string& Line::getText()

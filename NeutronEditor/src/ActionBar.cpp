@@ -29,6 +29,25 @@ ActionBar::ActionBar(sf::RenderWindow& window) :
 
 void ActionBar::draw() {
 
+	if (m_consoleCommand.running()) {
+		ConsoleCommand::ConsoleCommandOutput consoleOutput = m_consoleCommand.run();
+
+		// we have stuff to display !!
+		if (consoleOutput.finished) {
+			std::cout << consoleOutput.buffer;
+		}
+	}
+
+	// TODO: Use a configurable constant
+
+	// override the splash with the current notification
+	if (!m_notif.empty() && m_notifClock.getElapsedTime() < sf::milliseconds(3000)) {
+		m_text.setString(m_notif);
+	
+	} else if (!m_active) {
+		m_text.setString(m_splash);
+	}
+
 	m_window.setView(Constants::absoluteView);
 
 	int width = m_window.getSize().x;
@@ -51,7 +70,6 @@ void ActionBar::draw() {
 				shortcutString += m_autoCompleteCommands[i].shortcut[j];
 				shortcutString += " ";
 			}
-
 
 			for (int j = 0; j < fillerLength; j++) {
 				shortcutString += " ";
@@ -94,7 +112,6 @@ void ActionBar::autoComplete() {
 
 	// cmd command
 	else if (m_command[0] == '!') {
-
 	}
 
 	// command shortcut
@@ -141,6 +158,7 @@ void ActionBar::setActive(bool active) {
 	m_active = active;
 
 	if (m_active) {
+		m_notif = "";
 		m_command = "";
 		m_text.setString(m_command);
 		m_barShape.setFillColor(Constants::ACTIONBAR_COLOR);
@@ -174,7 +192,7 @@ void ActionBar::submit()
 	}
 	// exec a shell command
 	else if (m_command[0] == '!') {
-
+		m_consoleCommand.set(m_command.substr(1));
 		setActive(false);
 	}
 	// the user submits a command
@@ -182,6 +200,11 @@ void ActionBar::submit()
 		m_autoCompleteCommands[0].function(*this, TextView::getCurrentTextView());
 		m_autoCompleteCommands.clear();
 	}
+}
+
+void ActionBar::setNotif(std::string notif) {
+	m_notif = notif;
+	m_notifClock.restart();
 }
 
 void ActionBar::setRequest(std::string request, std::function<void(std::string)> callback) {

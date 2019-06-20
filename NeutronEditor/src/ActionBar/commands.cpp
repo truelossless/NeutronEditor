@@ -27,6 +27,36 @@ const std::vector<ActionBar::Command> ActionBar::m_commands = {
 	},
 
 	{
+		"close the current project",
+		{'p', 'c'},
+		ActionBar::action_closeProject
+	},
+
+	{
+		"open the project's dotfile",
+		{'p', 'd'}, // xD
+		ActionBar::action_openProjectDotFile
+	},
+
+	{
+		"create a new project",
+		{'p', 'n'},
+		ActionBar::action_createProject
+	},
+
+	{
+		"open a project",
+		{'p', 'o'},
+		ActionBar::action_openProject
+	},
+
+	{
+		"compile and run the current project",
+		{'p', 'r'},
+		ActionBar::action_runProject
+	},
+
+	{
 		"open the json configuration file",
 		{'s', 'c', 'o'},
 		ActionBar::action_openConfFile
