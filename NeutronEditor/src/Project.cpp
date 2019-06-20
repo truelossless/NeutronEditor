@@ -157,8 +157,7 @@ void Project::compile() {
 		std::filesystem::path mainPath = m_path;
 		mainPath /= "main.cpp";
 
-		// path of the main cpp file
-		std::string compileString = "g++ " + mainPath.u8string() + " ";
+		compileString += mainPath.u8string() + " ";
 
 		// output under the build folder
 		std::filesystem::path buildPath = m_path;
