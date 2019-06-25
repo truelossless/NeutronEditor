@@ -9,7 +9,9 @@ void ActionBar::action_splitHorizontally(ActionBar& actionBar, TextView& textVie
 	textView.setRSize(size);
 	textView.updateView();
 
-	TextView::addTextView(TextView(actionBar.m_window, pos.x, pos.y + size.y, size.x, size.y));
+	TextView* newTextView = new TextView(actionBar.m_window, actionBar, pos.x, pos.y + size.y, size.x, size.y);
+
+	TextView::addTextView(newTextView);
 	TextView::setCurrentTextViewIndex(TextView::getTextViewNumber() - 1);
 	actionBar.setActive(false);
 }

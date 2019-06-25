@@ -6,17 +6,19 @@
 #include <filesystem>
 #include <nfd.h>
 
+#include "ActionBar.h"
 #include "Constants.h"
 #include "SyntaxHighlighter.h"
 #include "Project.h"
 
-
-std::vector<TextView> TextView::m_textViews;
+std::vector<TextView*> TextView::m_textViews;
 int TextView::m_currentTextViewIndex = 0;
 
-TextView::TextView(sf::RenderWindow& window, float rx, float ry, float rwidth, float rheight) :
+TextView::TextView(sf::RenderWindow& window, ActionBar& actionBar, float rx, float ry, float rwidth, float rheight) :
 	m_window(window),
+	m_actionBar(actionBar),
 	m_cursor(),
+	m_linter(*this),
 
 	m_rx(rx),
 	m_ry(ry),
@@ -37,7 +39,7 @@ TextView::~TextView()
 }
 
 void TextView::draw() {
-	
+
 	// draw a thin border to differenciate editors
 
 	// draw the highlighted line
@@ -60,11 +62,18 @@ void TextView::draw() {
 
 		// if the line is errored, draw a red background
 		// TODO: register this color in the theme
-		if (m_lines[i].errored()) {
-			sf::RectangleShape errorBg(sf::Vector2f(m_width, Constants::FONT_SIZE));
-			errorBg.setFillColor(sf::Color(255, 0, 0, 50));
-			errorBg.setPosition(0, i*Constants::FONT_SIZE);
-			m_window.draw(errorBg);
+		if (m_lines[i].errored() || m_lines[i].warned()) {
+			sf::RectangleShape issueBg(sf::Vector2f(m_width, Constants::FONT_SIZE));
+
+			if (m_lines[i].warned()) {
+				issueBg.setFillColor(sf::Color(226, 169, 0, 50));
+			}
+			else if (m_lines[i].errored()) {
+				issueBg.setFillColor(sf::Color(255, 0, 0, 50));
+			}
+
+			issueBg.setPosition(0, i*Constants::FONT_SIZE);
+			m_window.draw(issueBg);
 		}
 
 		for (int j = 0; j < m_lines[i].getText().length(); j++) {
@@ -72,6 +81,14 @@ void TextView::draw() {
 			character.setPosition(baseX + Constants::FONT_WIDTH*j, Constants::FONT_SIZE*i);
 			m_window.draw(character);
 		}
+	}
+
+	// if the line under the cursor has an issue, display it in the actionbar
+	if (m_lines[m_cursor.getLine()].errored() || m_lines[m_cursor.getLine()].warned()) {
+		m_actionBar.setInfo(m_lines[m_cursor.getLine()].getIssue());
+	}
+	else {
+		m_actionBar.setInfo("");
 	}
 
 	// draw the line indicator
@@ -106,7 +123,7 @@ void TextView::updateView() {
 
 	m_x = m_rx * width;
 	m_y = m_ry * height;
-	
+
 	m_width = width * m_rwidth;
 	m_height = height * m_rheight;
 
@@ -115,7 +132,7 @@ void TextView::updateView() {
 
 	m_view.setViewport(sf::FloatRect(m_rx, m_ry, m_rwidth, m_rheight));
 	m_view.setSize(m_width, m_height);
-	m_view.setCenter(m_width/2, m_height/2);
+	m_view.setCenter(m_width / 2, m_height / 2);
 
 	m_absoluteView = m_view;
 	m_absoluteXView = m_view;
@@ -132,24 +149,24 @@ void TextView::moveView(int deltaX, int deltaY) {
 
 // scrolling: (working better)
 void TextView::scroll() {
-	
+
 	sf::Vector2i coords = m_window.mapCoordsToPixel(m_cursor.getShape().getPosition(), m_view);
 	sf::Vector2f newCoords = m_view.getCenter();
 
 	// down scroll
 	if (coords.y + Constants::FONT_SIZE > m_y + m_height) {
 		std::cout << "scrolling down" << std::endl;
-		newCoords.y = - m_height / 2 + (m_cursor.getLine()+1) * Constants::FONT_SIZE;
+		newCoords.y = -m_height / 2 + (m_cursor.getLine() + 1) * Constants::FONT_SIZE;
 		std::cout << "new coords /y: " << newCoords.y << std::endl;
 	}
-	
+
 	// up scroll
 	else if (coords.y < m_y) {
 		std::cout << "scrolling up" << std::endl;
 		newCoords.y = m_height / 2 + m_cursor.getLine() * Constants::FONT_SIZE;
 		std::cout << "new coords /y: " << newCoords.y << std::endl;
 	}
-	
+
 	int baseX = m_lineIndicator.getLocalBounds().width + Constants::FONT_WIDTH;
 
 	// left scroll
@@ -161,7 +178,7 @@ void TextView::scroll() {
 	// right scroll
 	else if (coords.x + Constants::FONT_WIDTH > m_x + m_width) {
 		std::cout << "scrolling right" << std::endl;
-		newCoords.x = -m_width / 2 + baseX + (m_cursor.getPos()+1) * Constants::FONT_WIDTH;
+		newCoords.x = -m_width / 2 + baseX + (m_cursor.getPos() + 1) * Constants::FONT_WIDTH;
 		std::cout << "new coords /x: " << newCoords.y << std::endl;
 	}
 
@@ -183,7 +200,7 @@ void TextView::save() {
 
 	// remove the linted errors
 	for (int i = 0; i < m_lines.size(); i++) {
-		m_lines[i].setErrored(false);
+		m_lines[i].resetIssues();
 	}
 
 	// if we don't know where to save this file, ask the user
@@ -227,6 +244,10 @@ void TextView::save() {
 		if (m_saveLocation == project.getDotFilePath()) {
 			project.parseDotFile();
 		}
+
+		// LINT AGAIN !
+		m_linter.lint();
+		std::cout << "saving ..." << std::endl;
 	}
 }
 
@@ -250,10 +271,10 @@ void TextView::open() {
 		file.close();
 		paste(stream);
 
+		m_linter.lint();
+
 		free(inPath);
-
 	}
-
 }
 
 void TextView::open(std::string path) {
@@ -265,16 +286,15 @@ void TextView::open(std::string path) {
 	file.close();
 	m_saveLocation = path;
 	paste(iss);
+	m_linter.lint();
 }
 
-std::string TextView::getSaveLocation()
-{
+std::string TextView::getSaveLocation() {
 	return m_saveLocation;
 }
 
-TextView &TextView::getCurrentTextView()
-{
-	return m_textViews[m_currentTextViewIndex];
+TextView &TextView::getCurrentTextView() {
+	return *m_textViews[m_currentTextViewIndex];
 }
 
 int TextView::getCurrentTextViewIndex() {
@@ -282,14 +302,14 @@ int TextView::getCurrentTextViewIndex() {
 }
 
 void TextView::setCurrentTextViewIndex(int index) {
-	m_textViews[m_currentTextViewIndex].m_active = false;
+	m_textViews[m_currentTextViewIndex]->m_active = false;
 	m_currentTextViewIndex = index;
-	m_textViews[m_currentTextViewIndex].m_active = true;
+	m_textViews[m_currentTextViewIndex]->m_active = true;
 }
 
-TextView & TextView::getTextView(int index)
+TextView& TextView::getTextView(int index)
 {
-	return m_textViews[index];
+	return *m_textViews[index];
 }
 
 int TextView::getTextViewNumber()
@@ -297,11 +317,11 @@ int TextView::getTextViewNumber()
 	return m_textViews.size();
 }
 
-void TextView::addTextView(TextView textView) {
+void TextView::addTextView(TextView* textView) {
 	m_textViews.push_back(textView);
-	if (!m_textViews.empty()) m_textViews[m_currentTextViewIndex].m_active = false;
+	if (!m_textViews.empty()) m_textViews[m_currentTextViewIndex]->m_active = false;
 	m_currentTextViewIndex = m_textViews.size() - 1;
-	m_textViews[m_currentTextViewIndex].m_active = true;
+	m_textViews[m_currentTextViewIndex]->m_active = true;
 }
 
 int TextView::getLineIndicatorNumberCount() {

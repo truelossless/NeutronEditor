@@ -1,7 +1,9 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <future>
+#include <functional>
 
 class ConsoleCommand
 {
@@ -10,6 +12,12 @@ public:
 	struct ConsoleCommandOutput {
 		bool finished = false;
 		std::string buffer = "";
+	};
+
+	struct ConsoleCommandTask {
+		ConsoleCommand* command;
+		std::string& output;
+		std::function<void()> callback;
 	};
 
 	ConsoleCommand();
@@ -22,6 +30,17 @@ public:
 
 	// or run synchronously
 	std::string syncRun(std::string command);
+
+	// async manager, to run the commands and provide a callback
+	class AsyncManager {
+
+	public:
+		static void registerCommand(ConsoleCommandTask* task);
+		static void runCommands();
+
+	private:
+		static std::vector<ConsoleCommandTask*> m_tasks;
+	};
 
 private:
 	std::string m_output;

@@ -52,6 +52,10 @@ bool Project::empty() {
 	return m_path.empty();
 }
 
+std::string Project::getPath() {
+	return m_path;
+}
+
 std::string Project::getDotFilePath() {
 	return std::filesystem::path(m_path).append(".nproj").u8string();
 }
@@ -65,36 +69,21 @@ bool Project::parseDotFile() {
 	std::ifstream dotFile(getDotFilePath());
 	Json::Value json;
 
+	// empty all our project settings
+	m_language = "";
+	m_compiler = "";
+	m_linterSettings = "";
+	m_includePath.clear();
+	m_libPath.clear();
+	m_libs.clear();
+
 	try {
 		dotFile >> json;
 	}
 	catch (Json::RuntimeError err) {
 
-		if (TextView::getCurrentTextView().getSaveLocation() == getDotFilePath()) {
-			// there is no public api in our json library to get the line number of the error, which SUCKS :/
-			// so I'll be parsing here the result from the error string ...
-
-			std::string errorMessage = std::string(err.what());
-
-			std::string firstLine = errorMessage.substr(7);
-			std::string lineNumber;
-			std::string::iterator it = firstLine.begin();
-
-			while (it != firstLine.end() && std::isdigit(*it)) {
-				lineNumber += *it;
-				++it;
-			}
-
-			size_t secondLinePos = errorMessage.find('\n');
-			std::string secondLine = errorMessage.substr(secondLinePos + 3);
-
-			TextView::getCurrentTextView().getLine(std::stoi(lineNumber) - 1).setErrored(true);
-		}
-
 		return false;
 	}
-
-	std::string str((std::istreambuf_iterator<char>(dotFile)), std::istreambuf_iterator<char>());
 
 	dotFile.close();
 
@@ -130,6 +119,10 @@ bool Project::parseDotFile() {
 	}
 
 	return true;
+}
+
+std::vector<std::string>& Project::getIncludePath() {
+	return m_includePath;
 }
 
 std::string Project::getLanguage() const {

@@ -8,8 +8,7 @@
 #include "TextView.h"
 #include "ConsoleCommand.h"
 
-class ActionBar
-{
+class ActionBar {
 public:
 
 	struct Command {
@@ -30,6 +29,9 @@ public:
 	void setActive(bool active);
 	std::string getText();
 	void submit();
+
+	// set an information instead of the splash text
+	void setInfo(std::string info);
 
 	// set a notification for a certain time instead of the splash text
 	void setNotif(std::string notif);
@@ -79,7 +81,7 @@ private:
 	std::string m_requester;
 	std::string m_command;
 
-	// notification that override the main text on the action bar, based on the current action
+	std::string m_info;
 	std::string m_notif;
 	
 	const std::string m_splash = "Neutron editor v0.1 - SHIFT SPACE to get started :)";

@@ -7,7 +7,19 @@ void ActionBar::action_runProject(ActionBar& actionBar, TextView& textView) {
 	Project& project = Project::getCurrentProject();
 
 	if (!project.empty()) {
-		actionBar.setNotif("Compilation started ...");
+
+		if (project.getLanguage().empty()) {
+			actionBar.setNotif("No language specified in your .nproj !");
+		}
+		
+		else if (project.getCompiler().empty()) {
+			actionBar.setNotif("No compiler specified in your .nproj !");
+		}
+
+		else {
+			actionBar.setNotif("Compilation started ...");
+		}
+
 		project.compile();
 	}
 	else {

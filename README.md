@@ -46,6 +46,7 @@ I'll keep a warm place somewhere in the editor to display your name :)
 - custom character spacing
 - improve project support
 - merge splitted windows
+- neotree project view
 
 ### Known bugs	
 
@@ -61,11 +62,15 @@ see: https://en.sfml-dev.org/forums/index.php?topic=22762.0
 - Cursor stutter when moving to a side / up or down, it is caused by the views but I don't know yet how to fix it.
 The cursor is moving, and then the view is moving, which break the smoothness when scrolling through lines.
 
+- Circular dependencies: TextView needs ActionBar to display things when for instance something has been saved, but ActionBar needs TextView to split Textviews etc.  
+So TextView.h includes ActionBar.h and ActionBar.h includes TextView.h D:  
+I have no idea of  another design sadly
+
 **Moderate**
 
 - Multiple quotes on the same line isn't working well
 
-- Text going under the action bar
+- Text going under the action bar : as I want to make a header later to display the file name for each textview, it would be cool to implement an offset feature in addition to the ratio feature of the textview.
 
 ## Shortcuts
 

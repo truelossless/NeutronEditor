@@ -41,12 +41,21 @@ void ActionBar::draw() {
 	// TODO: Use a configurable constant
 
 	// override the splash with the current notification
-	if (!m_notif.empty() && m_notifClock.getElapsedTime() < sf::milliseconds(3000)) {
-		m_text.setString(m_notif);
+
+	if (!m_active) {
+		if (!m_notif.empty() && m_notifClock.getElapsedTime() < sf::milliseconds(3000)) {
+			m_text.setString(m_notif);
 	
-	} else if (!m_active) {
-		m_text.setString(m_splash);
+		}
+		// override the splash with the current info
+		else if (!m_info.empty()) {
+			m_text.setString(m_info);
+		}
+		else {
+			m_text.setString(m_splash);
+		}
 	}
+
 
 	m_window.setView(Constants::absoluteView);
 
@@ -200,6 +209,10 @@ void ActionBar::submit()
 		m_autoCompleteCommands[0].function(*this, TextView::getCurrentTextView());
 		m_autoCompleteCommands.clear();
 	}
+}
+
+void ActionBar::setInfo(std::string info) {
+	m_info = info;
 }
 
 void ActionBar::setNotif(std::string notif) {

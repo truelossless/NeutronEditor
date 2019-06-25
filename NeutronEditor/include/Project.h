@@ -19,12 +19,14 @@ public:
 	};
 
 	void setPath(std::string path);
+	std::string getPath();
 	void createDotFile();
 	bool checkForDotFile();
 	bool empty();
 	std::string getDotFilePath();
 
 	bool parseDotFile();
+	std::vector<std::string>& getIncludePath();
 
 	std::string getLanguage() const;
 	std::string getCompiler() const;

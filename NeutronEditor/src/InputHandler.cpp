@@ -273,8 +273,14 @@ InputHandler::Result InputHandler::handleTextView(sf::Event& event) {
 
 		}
 
+		// break / pause key
+		else if (event.text.unicode == 19) {
+
+		}
+
 		// CTRL + ALT is ALT GR
 		else if (!ctrlPressed || ctrlPressed && altPressed) {
+			std::cout << event.text.unicode << std::endl;
 			textView->insert(static_cast<char>(event.text.unicode), cursor->getPos(), cursor->getLine());
 			cursor->right();
 		}

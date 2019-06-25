@@ -6,12 +6,15 @@
 
 #include "Line.h"
 #include "Cursor.h"
+#include "Linter.h"
+
+class ActionBar;
 
 class TextView {
 public:
 
 	// take the coordinates as fractions
-	TextView(sf::RenderWindow& window, float rx, float ry, float rwidth, float rheight);
+	TextView(sf::RenderWindow& window, ActionBar& actionBar, float rx, float ry, float rwidth, float rheight);
 	~TextView();
 
 	// basic operations
@@ -63,15 +66,18 @@ public:
 	static void setCurrentTextViewIndex(int index);
 	static TextView& getTextView(int index);
 	static int getTextViewNumber();
-	static void addTextView(TextView textView);
+	static void addTextView(TextView* textView);
 
 private:
 
 	// all the textviews are available here
-	static std::vector<TextView> m_textViews;
+	static std::vector<TextView*> m_textViews;
 	static int m_currentTextViewIndex;
 	
+	Linter m_linter;
+
 	sf::RenderWindow& m_window;
+	ActionBar& m_actionBar;
 	std::vector<Line> m_lines;
 
 	bool m_active = false;

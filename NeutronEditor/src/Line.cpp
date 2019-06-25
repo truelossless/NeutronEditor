@@ -13,6 +13,9 @@ Line::Line(std::string text) {
 	}
 }
 
+Line::~Line() {
+}
+
 Character& Line::getCharacter(int charNum) {
 	return m_characters[charNum];
 }
@@ -21,7 +24,7 @@ void Line::insert(char character, int charNum) {
 	m_characters.insert(m_characters.begin() + charNum, character);
 	m_line.insert(charNum, 1, character);
 
-	m_errored = false;
+	resetIssues();
 }
 
 void Line::append(std::string text) {
@@ -30,14 +33,14 @@ void Line::append(std::string text) {
 	}
 	m_line += text;
 
-	m_errored = false;
+	resetIssues();
 }
 
 void Line::erase(int charNum) {
 	m_characters.erase(m_characters.begin() + charNum);
 	m_line.erase(charNum, 1);
 
-	m_errored = false;
+	resetIssues();
 }
 
 bool Line::errored()
@@ -45,15 +48,33 @@ bool Line::errored()
 	return m_errored;
 }
 
+bool Line::warned()
+{
+	return m_warned;
+}
+
 void Line::setErrored(bool errored) {
 	m_errored = errored;
 }
 
-std::string& Line::getText()
-{
+void Line::setWarned(bool warned) {
+	m_warned = warned;
+}
+
+void Line::setIssue(std::string issue) {
+	m_issue = issue;
+}
+
+std::string Line::getIssue() const {
+	return m_issue;
+}
+
+std::string& Line::getText() {
 	return m_line;
 }
 
-Line::~Line()
-{
+void Line::resetIssues() {
+	m_warned = false;
+	m_errored = false;
+	m_issue = "";
 }

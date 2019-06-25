@@ -11,6 +11,8 @@ void ActionBar::action_splitVertically(ActionBar& actionBar, TextView& textView)
 	textView.setRSize(size);
 	textView.updateView();
 
-	TextView::addTextView(TextView(actionBar.m_window, pos.x + size.x, pos.y, size.x, size.y));
+	TextView* newTextView = new TextView(actionBar.m_window, actionBar, pos.x + size.x, pos.y, size.x, size.y);
+
+	TextView::addTextView(newTextView);
 	actionBar.setActive(false);
 }

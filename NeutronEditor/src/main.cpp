@@ -25,16 +25,15 @@ int main() {
 
 	Constants::setFont(fontBaseDir + "Hack-Regular.ttf");
 	Constants::parseThemeFile();
-
-	TextView::addTextView(TextView(window, 0, 0, 1, 1));
+	
 	ActionBar actionBar(window);
+
+	TextView* mainTextView = new TextView(window, actionBar, 0, 0, 1, 1);
+	TextView::addTextView(mainTextView);
 	InputHandler inputHandler;
 
 	Project project;
 	Project::setCurrentProject(project);
-
-	Linter cppLint;
-	std::cout << cppLint.executableInPath();
 
 	while (window.isOpen()) {
 		
@@ -70,6 +69,7 @@ int main() {
 			}
 		}
 
+		ConsoleCommand::AsyncManager::runCommands();
 		Project::runCompileTasks();
 
 		window.clear(Constants::BACKGROUND_COLOR);

@@ -3,6 +3,8 @@
 #include <iostream>
 #include <cstdio>
 
+std::vector<ConsoleCommand::ConsoleCommandTask*> ConsoleCommand::AsyncManager::m_tasks;
+
 ConsoleCommand::ConsoleCommand() {
 }
 
@@ -11,6 +13,7 @@ ConsoleCommand::~ConsoleCommand() {
 }
 
 void ConsoleCommand::set(std::string command) {
+	
 	close(m_pipe);
 	m_pipe = open(command);
 
@@ -104,4 +107,33 @@ ConsoleCommand::ConsoleCommandOutput ConsoleCommand::process() {
 	}
 
 	return ret;
+}
+
+void ConsoleCommand::AsyncManager::registerCommand(ConsoleCommandTask* task) {
+	m_tasks.push_back(task);
+}
+
+void ConsoleCommand::AsyncManager::runCommands() {
+
+	for (int i = m_tasks.size() - 1; i >= 0; i--) {
+
+		std::cout << "running commands" << std::endl;
+
+		if (m_tasks[i]->command->running()) {
+			ConsoleCommand::ConsoleCommandOutput compileOutput = m_tasks[i]->command->run();
+
+			if (compileOutput.finished) {
+				m_tasks[i]->output += compileOutput.buffer;
+				std::cout << m_tasks[i]->output << std::endl;
+			}
+		}
+		else {
+			std::cout << "task finsihed, starting callback ..." << std::endl;
+			m_tasks[i]->callback();
+
+			delete m_tasks[i];
+			m_tasks.erase(m_tasks.begin() + i);
+			std::cout << "deleted task !" << std::endl;
+		}
+	}
 }

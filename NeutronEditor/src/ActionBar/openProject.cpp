@@ -24,8 +24,12 @@ void ActionBar::action_openProject(ActionBar& actionBar, TextView& textView) {
 		}
 		else if (std::filesystem::exists(dotFile)) {
 			project.setPath(outPath);
-			actionBar.setNotif("Project opened !");
-			project.parseDotFile();
+			if (project.parseDotFile()) {
+				actionBar.setNotif("Project opened !");
+			}
+			else {
+				actionBar.setNotif("Unable to parse the project dotfile !");
+			}
 		}
 		else {
 			actionBar.setNotif("No project to open here :(");
